@@ -1,63 +1,51 @@
-class NewThread implements Runnable {
-    String name;
+class CallMe {
+    void call(String msg) {
+        System.out.print("[" + msg);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            System.out.println("Interrupted");
+        }
+        System.out.println("]");
+    }
+}
+
+class Caller implements Runnable {
+    private String msg;
+    private CallMe target;
     Thread t;
 
-    NewThread(String threadName) {
-        //Create a new thread
-        name = threadName;
-        t = new Thread(this, name);
-        System.out.println("New thread: " + t);
+    public Caller(CallMe target, String msg) {
+        this.msg = msg;
+        this.target = target;
+        t = new Thread(this);
     }
 
-    //New thread calls this version of run() when started
     @Override
     public void run() {
-        try {
-            for (int i = 5; i > 0; i--) {
-                System.out.println(name + ": " + i);
-                Thread.sleep(1000);
-            }
-        } catch (InterruptedException e) {
-            System.out.println(name + " interrupted");
-        }
-        System.out.println(name + " exiting");
+        target.call(msg);
     }
 }
 
 public class Main {
 
     public static void main(String[] args) {
-        NewThread nt1 = new NewThread("One");
-        NewThread nt2 = new NewThread("Two");
-        NewThread nt3 = new NewThread("Three");
+        CallMe target = new CallMe();
+        Caller caller1 = new Caller(target, "Hello");
+        Caller caller2 = new Caller(target, "Synchronised");
+        Caller caller3 = new Caller(target, "World");
 
-        nt1.t.start();
-        nt2.t.start();
-        nt3.t.start();
-
-        System.out.println("Thread One is alive: "
-                + nt1.t.isAlive());
-        System.out.println("Thread Two is alive: "
-                + nt2.t.isAlive());
-        System.out.println("Thread Three is alive: "
-                + nt3.t.isAlive());
+        caller1.t.start();
+        caller2.t.start();
+        caller3.t.start();
 
         try {
             System.out.println("Waiting for threads to finish");
-            nt1.t.join();
-            nt2.t.join();
-            nt3.t.join();
+            caller1.t.join();
+            caller2.t.join();
+            caller3.t.join();
         } catch (InterruptedException e) {
             System.out.println("Main thread interrupted");
         }
-
-        System.out.println("Thread One is alive: "
-                + nt1.t.isAlive());
-        System.out.println("Thread Two is alive: "
-                + nt2.t.isAlive());
-        System.out.println("Thread Three is alive: "
-                + nt3.t.isAlive());
-
-        System.out.println("Main thread exiting");
     }
 }
