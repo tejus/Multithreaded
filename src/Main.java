@@ -9,7 +9,7 @@ class NewThread implements Runnable {
         System.out.println("New thread: " + t);
     }
 
-    //New thread calls this version of run() when instantiated
+    //New thread calls this version of run() when started
     @Override
     public void run() {
         try {
@@ -35,11 +35,29 @@ public class Main {
         nt2.t.start();
         nt3.t.start();
 
+        System.out.println("Thread One is alive: "
+                + nt1.t.isAlive());
+        System.out.println("Thread Two is alive: "
+                + nt2.t.isAlive());
+        System.out.println("Thread Three is alive: "
+                + nt3.t.isAlive());
+
         try {
-            Thread.sleep(10000);
+            System.out.println("Waiting for threads to finish");
+            nt1.t.join();
+            nt2.t.join();
+            nt3.t.join();
         } catch (InterruptedException e) {
             System.out.println("Main thread interrupted");
         }
+
+        System.out.println("Thread One is alive: "
+                + nt1.t.isAlive());
+        System.out.println("Thread Two is alive: "
+                + nt2.t.isAlive());
+        System.out.println("Thread Three is alive: "
+                + nt3.t.isAlive());
+
         System.out.println("Main thread exiting");
     }
 }
