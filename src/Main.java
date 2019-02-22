@@ -1,13 +1,13 @@
-class NewThread extends Thread {
+class NewThread implements Runnable {
+    Thread t;
 
     NewThread() {
-        //Call super constructor to create a new thread
-        super("Demo Thread");
-        System.out.println("Child thread: " + this);
+        //Create a new thread
+        t = new Thread(this, "Demo Thread");
+        System.out.println("Child thread: " + t);
     }
 
     //New thread calls this version of run() when instantiated
-
     @Override
     public void run() {
         try {
@@ -27,7 +27,7 @@ public class Main {
     public static void main(String[] args) {
         NewThread nt = new NewThread();
 
-        nt.start();
+        nt.t.start();
 
         try {
             for (int n = 5; n > 0; n--) {
