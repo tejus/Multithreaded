@@ -1,11 +1,11 @@
 class Q {
     private int n;
 
-    void get() {
+    synchronized void get() {
         System.out.println("Got: " + n);
     }
 
-    void put(int n) {
+    synchronized void put(int n) {
         this.n = n;
         System.out.println("Put: " + n);
     }
