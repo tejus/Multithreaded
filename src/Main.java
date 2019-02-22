@@ -1,10 +1,12 @@
 class NewThread implements Runnable {
+    String name;
     Thread t;
 
-    NewThread() {
+    NewThread(String threadName) {
         //Create a new thread
-        t = new Thread(this, "Demo Thread");
-        System.out.println("Child thread: " + t);
+        name = threadName;
+        t = new Thread(this, name);
+        System.out.println("New thread: " + t);
     }
 
     //New thread calls this version of run() when instantiated
@@ -12,28 +14,29 @@ class NewThread implements Runnable {
     public void run() {
         try {
             for (int i = 5; i > 0; i--) {
-                System.out.println("Child thread: " + i);
-                Thread.sleep(500);
+                System.out.println(name + ": " + i);
+                Thread.sleep(1000);
             }
         } catch (InterruptedException e) {
-            System.out.println("Child thread interrupted");
+            System.out.println(name + " interrupted");
         }
-        System.out.println("Exiting child thread");
+        System.out.println(name + " exiting");
     }
 }
 
 public class Main {
 
     public static void main(String[] args) {
-        NewThread nt = new NewThread();
+        NewThread nt1 = new NewThread("One");
+        NewThread nt2 = new NewThread("Two");
+        NewThread nt3 = new NewThread("Three");
 
-        nt.t.start();
+        nt1.t.start();
+        nt2.t.start();
+        nt3.t.start();
 
         try {
-            for (int n = 5; n > 0; n--) {
-                System.out.println("Main thread: " + n);
-                Thread.sleep(1000);
-            }
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
             System.out.println("Main thread interrupted");
         }
