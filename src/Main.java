@@ -1,30 +1,51 @@
-class CallMe {
-    void call(String msg) {
-        System.out.print("[" + msg);
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            System.out.println("Interrupted");
-        }
-        System.out.println("]");
+class Q {
+    private int n;
+
+    void get() {
+        System.out.println("Got: " + n);
+    }
+
+    void put(int n) {
+        this.n = n;
+        System.out.println("Put: " + n);
     }
 }
 
-class Caller implements Runnable {
-    private String msg;
-    private final CallMe target;
+class Producer implements Runnable {
+    private Q q;
     Thread t;
 
-    Caller(CallMe target, String msg) {
-        this.msg = msg;
-        this.target = target;
-        t = new Thread(this);
+    Producer(Q q) {
+        this.q = q;
+        t = new Thread(this, "Producer");
     }
 
     @Override
     public void run() {
-        synchronized (target) {
-            target.call(msg);
+        int i = 0;
+
+        while (i < 10) {
+            q.put(i++);
+        }
+    }
+}
+
+class Consumer implements Runnable {
+    private Q q;
+    Thread t;
+
+    Consumer(Q q) {
+        this.q = q;
+        t = new Thread(this, "Consumer");
+    }
+
+    @Override
+    public void run() {
+        int i = 0;
+
+        while (i < 10) {
+            q.get();
+            i++;
         }
     }
 }
@@ -32,22 +53,11 @@ class Caller implements Runnable {
 public class Main {
 
     public static void main(String[] args) {
-        CallMe target = new CallMe();
-        Caller caller1 = new Caller(target, "Hello");
-        Caller caller2 = new Caller(target, "Synchronised");
-        Caller caller3 = new Caller(target, "World");
+        Q q = new Q();
+        Producer p = new Producer(q);
+        Consumer c = new Consumer(q);
 
-        caller1.t.start();
-        caller2.t.start();
-        caller3.t.start();
-
-        try {
-            System.out.println("Waiting for threads to finish");
-            caller1.t.join();
-            caller2.t.join();
-            caller3.t.join();
-        } catch (InterruptedException e) {
-            System.out.println("Main thread interrupted");
-        }
+        p.t.start();
+        c.t.start();
     }
 }
