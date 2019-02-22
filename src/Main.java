@@ -2,7 +2,7 @@ class Q {
     private int n;
     boolean valueSet = false;
 
-    synchronized void get() {
+    void get() {
         while (!valueSet) {
             try {
                 wait();
@@ -15,7 +15,7 @@ class Q {
         notify();
     }
 
-    synchronized void put(int n) {
+    void put(int n) {
         while (valueSet) {
             try {
                 wait();
@@ -31,7 +31,7 @@ class Q {
 }
 
 class Producer implements Runnable {
-    private Q q;
+    private final Q q;
     Thread t;
 
     Producer(Q q) {
@@ -44,13 +44,15 @@ class Producer implements Runnable {
         int i = 0;
 
         while (i < 10) {
-            q.put(i++);
+            synchronized (q) {
+                q.put(i++);
+            }
         }
     }
 }
 
 class Consumer implements Runnable {
-    private Q q;
+    private final Q q;
     Thread t;
 
     Consumer(Q q) {
@@ -63,7 +65,9 @@ class Consumer implements Runnable {
         int i = 0;
 
         while (i < 10) {
-            q.get();
+            synchronized (q) {
+                q.get();
+            }
             i++;
         }
     }
