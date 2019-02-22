@@ -1,5 +1,5 @@
 class CallMe {
-    synchronized void call(String msg) {
+    void call(String msg) {
         System.out.print("[" + msg);
         try {
             Thread.sleep(1000);
@@ -12,10 +12,10 @@ class CallMe {
 
 class Caller implements Runnable {
     private String msg;
-    private CallMe target;
+    private final CallMe target;
     Thread t;
 
-    public Caller(CallMe target, String msg) {
+    Caller(CallMe target, String msg) {
         this.msg = msg;
         this.target = target;
         t = new Thread(this);
@@ -23,7 +23,9 @@ class Caller implements Runnable {
 
     @Override
     public void run() {
-        target.call(msg);
+        synchronized (target) {
+            target.call(msg);
+        }
     }
 }
 
